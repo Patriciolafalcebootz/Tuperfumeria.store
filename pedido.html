@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Hacer pedido - TuPerfumería</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #fafafa; color: #222; }
+    .pedido-container { max-width: 430px; margin: 2.5rem auto; background: #fff; border-radius: 14px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); padding: 2rem; }
+    input, textarea { width: 100%; border-radius: 8px; border: 1px solid #ddd; padding: 0.7rem 1rem; margin: 0.7rem 0 1.2rem; font-size: 1rem; }
+    button { background: #25d366; color: #fff; border: none; padding: 0.7rem 2rem; border-radius: 8px; font-size: 1.1rem; font-weight: 500; cursor: pointer; transition: background 0.22s;}
+    button:hover { background: #1da851;}
+  </style>
+</head>
+<body>
+  <div class="pedido-container">
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem; text-align:center;">Hacé tu pedido</h2>
+    <form id="pedidoForm">
+      <label>Nombre y apellido</label>
+      <input type="text" required>
+      <label>WhatsApp</label>
+      <input type="tel" required placeholder="Ej: 11 1234-5678">
+      <label>Perfume a pedir</label>
+      <input type="text" id="prodInput" required>
+      <label>Comentarios (opcional)</label>
+      <textarea></textarea>
+      <button type="submit">Enviar pedido</button>
+    </form>
+    <div id="mensajeOk" style="display:none;color:green;margin-top:1.3rem;text-align:center;">
+      ¡Pedido enviado! Te contactaremos por WhatsApp.
+    </div>
+  </div>
+  <script>
+    // Completa el campo con el nombre del producto si viene por query string
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('prod')) {
+      document.getElementById('prodInput').value = urlParams.get('prod');
+    }
+    // Simula envío de pedido
+    document.getElementById('pedidoForm').onsubmit = function(e){
+      e.preventDefault();
+      document.getElementById('mensajeOk').style.display = 'block';
+      setTimeout(()=>window.location='index.html', 2500);
+    }
+  </script>
+</body>
+</html>
