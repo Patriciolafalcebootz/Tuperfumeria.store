@@ -1,47 +1,1003 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TuPerfumería - Perfumes exclusivos y decants</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Roboto:wght@300;400;500">
-  <style>
-    body { font-family: 'Roboto', Arial, sans-serif; background: #fafafa; color: #333; }
-    .perfume-img { max-height: 150px; border-radius: 18px; box-shadow: 0 2px 16px rgba(0,0,0,0.07); }
-    header, footer { background: #111; color: #fff; text-align: center; padding: 1.2rem; }
-    nav a { margin: 0 1rem; color: #fff; text-decoration: none; font-weight: 500; }
-    .promo {
-      background: #111; color: #fff; padding: 1.4rem 1rem 1.3rem 1rem;
-      border-radius: 0 0 18px 18px; text-align: center; font-size: 1.25rem; font-weight: 500;
-      border-bottom: 2px solid #25d366; box-shadow: 0 2px 12px rgba(0,0,0,0.13); margin-bottom: 5px;
-      position: relative; letter-spacing: 0.5px;
-    }
-    .catalogo { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2rem; padding: 2rem 0;}
-    .perfume-card { background: #fff; border-radius: 18px; box-shadow: 0 2px 12px rgba(0,0,0,0.09); padding: 1.3rem; text-align: center; }
-    .perfume-card h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; margin: 0.7rem 0 0.4rem; }
-    .btn-agregar { background: #25d366; color: #fff; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 500; border: none; cursor: pointer; transition: background 0.2s; }
-    .btn-agregar:hover { background: #1da851; }
-    .carrito-icon { width: 2rem; margin-right: 0.4rem; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TuPerfumería - Perfumes y decants importados</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap');
+        
+        :root {
+            --primary: #2c3e50;
+            --secondary: #ecc94b;
+            --accent: #9f7aea;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to bottom, #fdf2f8, #e9e6fd);
+            color: var(--primary);
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+        
+       .hero {
+    background: 
+        linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+        url("images/banner.jpeg") no-repeat center center;
+    background-size: cover;
+    color: white;
+        }
+        
+        .perfume-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+        }
+        
+        .perfume-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.11);
+        }
+
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .perfume-card.clicked {
+            animation: pop 0.3s ease;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.75);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 0.5rem;
+            width: 90%;
+            max-width: 900px;
+            max-height: 92vh;
+            overflow-y: auto;
+            transform: scale(0.93);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .gallery-thumbnail {
+            cursor: pointer;
+            transition: opacity 0.2s;
+            border: 2px solid transparent;
+        }
+        
+        .gallery-thumbnail:hover,
+        .gallery-thumbnail.selected {
+            border-color: #ecc94b;
+            opacity: 0.8;
+        }
+        
+        .category-tab {
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .category-tab.active, .category-tab:hover {
+            border-bottom: 2px solid var(--secondary);
+        }
+
+        /* Estilos para el carrito */
+        .cart-overlay {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 350px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 101;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .cart-overlay.active {
+            transform: translateX(0);
+            animation: cartSlideIn 0.3s ease;
+        }
+
+        @keyframes cartSlideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        .cart-item {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        .cart-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        /* Estilos para el comparador */
+        .compare-overlay {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 101;
+
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .compare-overlay.active {
+            transform: translateY(0);
+            animation: compareSlideUp 0.3s ease;
+        }
+
+        @keyframes compareSlideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .marquee {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .marquee span {
+            display: inline-block;
+            animation: marquee 10s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1 style="font-family:'Playfair Display', serif; font-size:2rem;">TuPerfumería</h1>
-    <nav>
-      <a href="index.html">Catálogo</a>
-      <a href="pedido.html">Hacer un pedido</a>
+    <!-- Botón del carrito flotante -->
+    <div class="fixed bottom-8 right-8 z-50">
+        <button onclick="toggleCart()" class="bg-gray-800 text-white p-4 rounded-full shadow-lg hover:bg-gray-700 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span id="cart-count" class="absolute -top-2 -right-2 bg-yellow-500 text-gray-800 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">0</span>
+        </button>
+    </div>
+
+    <!-- Botón del comparador flotante -->
+    <div id="compare-btn-container" class="fixed bottom-8 left-8 z-50 hidden">
+        <button id="compare-btn" onclick="toggleCompare()" class="bg-purple-600 text-white p-4 rounded-full shadow-lg hover:bg-purple-500 transition">
+            Comparar (0)
+        </button>
+    </div>
+
+    <!-- Navegación superior -->
+    <nav class="bg-white shadow">
+        <div class="container mx-auto px-4 py-4 flex items-center">
+            <a href="index.html" class="font-bold text-gray-800">Inicio</a>
+            <div class="marquee flex-1 mx-4">
+                <span class="text-gray-600">No te olvides de seguirnos en Instagram</span>
+            </div>
+            <a href="pedido.html" class="text-gray-600 hover:text-gray-800">Realizar Pedido</a>
+        </div>
     </nav>
-  </header>
-  <div class="promo">
-    Perfumes importados originales • Atención personalizada • Envíos en Zona Sur y CABA
-  </div>
-  <main>
-    <div class="catalogo" id="catalogo"></div>
-  </main>
-  <footer>
-    &copy; 2024 TuPerfumería. Todos los derechos reservados.
-  </footer>
-  <script src="cart.js"></script>
+
+    <!-- Carrito lateral -->
+    <div class="cart-overlay">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold">Tu Carrito</h3>
+            <button onclick="toggleCart()" class="text-gray-500 hover:text-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        
+        <div id="cart-items" class="mb-4">
+            <!-- Los items del carrito se agregarán aquí dinámicamente -->
+        </div>
+        
+        <div class="border-t pt-4">
+            <div class="flex justify-between font-bold text-lg mb-4">
+                <span>Total:</span>
+                <span id="cart-total">$0</span>
+            </div>
+            <button onclick="checkout()" class="bg-gray-800 text-white px-4 py-2 rounded font-medium hover:bg-gray-700 transition w-full">
+                Finalizar Compra
+            </button>
+        </div>
+    </div>
+
+    <!-- Comparador de perfumes -->
+    <div class="compare-overlay" id="compare-overlay">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold">Comparar perfumes</h3>
+            <button onclick="toggleCompare()" class="text-gray-500 hover:text-gray-700">&times;</button>
+        </div>
+        <div id="compare-items" class="flex space-x-4 overflow-x-auto"></div>
+    </div>
+
+    <header class="hero py-20 mb-12">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-4">TuPerfumería</h1>
+            <p class="text-xl text-white opacity-90">Perfumes exclusivos y decants de calidad</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-start mb-8">
+            <div>
+                <h2 class="text-3xl font-bold mb-4 md:mb-6">Nuestro Catálogo</h2>
+                <div class="flex flex-wrap gap-4 mb-6">
+                    <button class="category-tab px-4 py-2 font-medium bg-gray-100 rounded-lg active" data-category="arabes">Árabes</button>
+                    <button class="category-tab px-4 py-2 font-medium bg-gray-100 rounded-lg" data-category="disenador">Diseñador</button>
+                    <button class="category-tab px-4 py-2 font-medium bg-gray-100 rounded-lg" data-category="decants">Decants</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- Árabes Tab -->
+            <div id="arabes" class="tab-panel active">
+                <h3 class="text-2xl font-semibold mb-6 text-center">Perfumes Árabes</h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16" id="arabesGrid"></div>
+            </div>
+            
+            <!-- Diseñador Tab -->
+            <div id="disenador" class="tab-panel hidden">
+                <h3 class="text-2xl font-semibold mb-6 text-center">Perfumes de Diseñador</h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16" id="disenadorGrid"></div>
+            </div>
+            
+            <!-- Decants Tab -->
+            <div id="decants" class="tab-panel hidden">
+                <h3 class="text-2xl font-semibold mb-6 text-center">Decants Disponibles</h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16" id="decantsGrid"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white py-12 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Contacto</h3>
+                    <p class="mb-2">WhatsApp: +54 11 3872-2792</p>
+                    <p>Email: tuperfumeria.net@gmail.com</p>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Redes Sociales</h3>
+                    <div class="flex space-x-4">
+                        <a href="https://www.instagram.com/tuperfumeria.store/" target="_blank" class="hover:text-yellow-300">Instagram</a>
+                        <a href="https://tiktok.com/" target="_blank" class="hover:text-yellow-300">TikTok</a>
+                    </div>
+                </div>
+                
+                <div>
+                    <!-- Espacio dejado en blanco como solicitaste -->
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p>&copy; 2025 TuPerfumería. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal de producto -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <div class="relative p-6">
+                <button class="absolute top-4 right-4 text-2xl font-bold text-gray-500 hover:text-gray-700" onclick="closeModal()">&times;</button>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="gallery-container">
+                        <img id="main-image" src="" alt="Imagen principal del perfume" class="w-full rounded-lg">
+                        <div id="notes-container" class="hidden p-4 bg-gray-50 rounded-lg mt-4"></div>
+
+                        <div class="thumbnail-grid grid grid-cols-4 gap-2 mt-4" id="thumbnails"></div>
+                    </div>
+                    
+                    <div class="product-info">
+                        <h3 id="modal-title" class="text-3xl font-bold mb-2"></h3>
+                        <span id="modal-category" class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mb-4"></span>
+                        
+                        <p id="modal-description" class="text-gray-700 mb-6"></p>
+                        
+                        <div class="flex items-center mb-4">
+                            <span class="text-2xl font-bold mr-4" id="modal-price"></span>
+                            <div class="flex items-center bg-green-100 text-green-800 text-xs px-2 py-1 rounded" id="modal-stock">
+                                Disponible
+                            </div>
+                        </div>
+                        
+                        <button class="bg-gray-800 text-white px-6 py-3 rounded font-medium hover:bg-gray-700 transition w-full mb-4" onclick="buyNow()">
+                            Comprar ahora
+                        </button>
+                        
+                        <button class="bg-yellow-500 text-gray-800 px-6 py-3 rounded font-medium hover:bg-yellow-400 transition w-full" onclick="handleAddToCart()">
+                            Añadir al carrito
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="cart.js"></script>
+    <script>
+        // La constante productos incluye categorías "Árabes" y "Diseñador"; las decants se definen aparte
+        const productos = [
+            {
+                nombre: "Al Haramain Amber Oud Gold Unisex 120ML",
+                imagenes: ["images/Amber oud gold.jpeg"],
+                categoria: "Árabes",
+                precio: 85000,
+                descripcion: "",
+                stock: true,
+                notas: {
+                    top: ["Bergamota", "Notas verdes"],
+                    middle: ["Melón", "Piña", "Ámbar"],
+                    base: ["Almizcle", "Vainilla", "Notas amaderadas"]
+                }
+            },
+            {
+                nombre: "Armaf Club de Nuit intense man EDT 100ML",
+                imagenes: ["images/Club de nuit intense.jpeg"],
+                categoria: "Árabes",
+                precio: 48000,
+                descripcion: "",
+                stock: true,
+                notas: {
+                    top: ["Limón", "Piña", "Bergamota", "Grosella negra", "Manzana"],
+                    middle: ["Rosa", "Jazmín", "Abedul"],
+                    base: ["Vainilla", "Pachulí", "Ámbar gris", "Almizcle"]
+                }
+            },
+            {
+                nombre: "Armaf Odyssey Mandarin Sky EDP MAS 100ML",
+                imagenes: ["images/Mandarin sky.jpeg"],
+                categoria: "Árabes",
+                precio: 64000,
+                descripcion: "",
+                stock: true,
+                notas: {
+                    top: ["Mandarina", "Pomelo"],
+                    middle: ["Cardamomo", "Especias", "Ámbar"],
+                    base: ["Vainilla", "Almizcle", "Pachulí"]
+                }
+            },
+            {
+                nombre: "Lattafa Asad Bourbon EDP 100ML",
+                imagenes: ["images/Yara bourbon.jpeg"],
+                categoria: "Árabes",
+                precio: 62000,
+                descripcion: "",
+                stock: true,
+                notas: {
+                    top: ["Pimienta negra", "Piña", "Tabaco"],
+                    middle: ["Café", "Vainilla", "Pachulí"],
+                    base: ["Ámbar", "Benjuí", "Labdanum"]
+                }
+            },
+            {
+                nombre: "Lattafa ASAD YARA TOUS EDP MAS 100ML",
+                imagenes: ["images/Yara naranja.jpeg"],
+                categoria: "Árabes",
+                precio: 35000,
+                descripcion: "",
+                stock: true,
+                notas: {
+                    top: ["Mandarina", "Naranja"],
+                    middle: ["Frutas tropicales", "Jazmín"],
+                    base: ["Vainilla", "Almizcle"]
+                }
+            },
+            {
+                nombre: "Lattafa ASAD YARA CANDY EDP 100ML",
+                imagenes: ["images/Yara candy.jpeg"],
+                categoria: "Árabes",
+                precio: 35000,
+                descripcion: "",
+                stock: true,
+                notas: {
+                    top: ["Malvavisco", "Bergamota", "Flores blancas"],
+                    middle: ["Caramelo", "Durazno", "Azúcar"],
+                    base: ["Almizcle", "Sándalo", "Vainilla"]
+                }
+            },
+            {
+                nombre: "Lattafa Khamrah EDP unisex 100ML",
+                imagenes: ["images/Khamrah.jpeg"],
+                categoria: "Árabes",
+                precio: 52000,
+                descripcion: "",
+                stock: true,
+                notas: {
+                    top: ["Canela", "Nuez moscada", "Bergamota"],
+                    middle: ["Dátiles", "Praliné", "Nardos"],
+                    base: ["Vainilla", "Haba tonka", "Ámbar", "Oud"]
+                }
+            },
+            {
+                nombre: "BADEE AL OUD OUD NOBLE BLUSH EDP 100ML",
+                imagenes: ["images/Noble blush.jpeg"],
+                categoria: "Árabes",
+                precio: 40000,
+                descripcion: "",
+                stock: true,
+                notas: {
+                    top: ["Azafrán", "Bergamota"],
+                    middle: ["Rosa", "Madera de ámbar"],
+                    base: ["Oud", "Almizcle", "Sándalo"]
+                }
+            },
+            {
+                nombre: "BADEE AL OUD FOR GLORY EDP 100ML",
+                imagenes: ["images/Oud for glory.jpeg"],
+                categoria: "Árabes",
+                precio: 48000,
+                descripcion: "",
+                stock: true,
+                notas: {
+                    top: ["Azafrán", "Lavanda", "Nuez moscada"],
+                    middle: ["Oud", "Pachulí", "Rosa"],
+                    base: ["Oud", "Pachulí", "Almizcle", "Ámbar"]
+                }
+            },
+            {
+                nombre: "BADEE AL OUD AMETHYST EDP 100ML",
+                imagenes: ["images/Amatyst.jpeg"],
+                categoria: "Árabes",
+                precio: 48000,
+                descripcion: "",
+                stock: true,
+                notas: {
+                    top: ["Rosa", "Bergamota"],
+                    middle: ["Rosa turca", "Rosa búlgara", "Jazmín"],
+                    base: ["Ámbar", "Vainilla", "Oud"]
+                }
+            },
+            {
+                nombre: "ASAD ZANZIBAR EDP 100ML",
+                imagenes: ["images/Zanzibar.jpeg"],
+                categoria: "Árabes",
+                precio: 34000,
+                descripcion: "",
+                stock: true,
+                notas: {
+                    top: ["Mandarina", "Cardamomo"],
+                    middle: ["Lavanda", "Geranio"],
+                    base: ["Cedro", "Vetiver", "Pachulí"]
+                }
+            },
+            {
+                nombre: "BADEE AL OUD HONOR & GLORY EDP 100ML",
+                imagenes: ["images/Honor and glory.jpeg"],
+                categoria: "Árabes",
+                precio: 45000,
+                descripcion: "",
+                stock: true,
+                notas: {
+                    top: ["Ananá", "Pomelo"],
+                    middle: ["Lavanda", "Pachulí"],
+                    base: ["Ámbar", "Madera de guayaco", "Almizcle"]
+                }
+            },
+            // Diseñador
+            {
+                nombre: "Azzaro The Most Wanted EDP Intense [SIN STOCK]",
+                imagenes: ["images/azzaro most wanted.jpeg"],
+                categoria: "Diseñador",
+                precio: 11111,
+                descripcion: "",
+                stock: false,
+                notas: {
+                    top: ["Cardamomo"],
+                    middle: ["Toffee"],
+                    base: ["Ámbar madera", "Vainilla bourbon"]
+                }
+            },
+            {
+                nombre: "Carolina Herrera 212 VIP Rose Elixir [SIN STOCK]",
+                imagenes: ["images/212 vip rose.jpeg"],
+                categoria: "Diseñador",
+                precio: 11111,
+                descripcion: "",
+                stock: false,
+                notas: {
+                    top: ["Grosella roja", "Mandarina", "Lichi"],
+                    middle: ["Rosa", "Flor de durazno", "Peonía"],
+                    base: ["Vainilla", "Pachulí", "Almizcle"]
+                }
+            },
+            {
+                nombre: "Carolina Herrera Good Girl [SIN STOCK]",
+                imagenes: ["images/good girl.jpeg"],
+                categoria: "Diseñador",
+                precio: 1111111,
+                descripcion: "",
+                stock: false,
+                notas: {
+                    top: ["Almendra", "Café", "Bergamota"],
+                    middle: ["Jazmín sambac", "Nardos", "Raíz de lirio"],
+                    base: ["Haba tonka", "Cacao", "Vainilla"]
+                }
+            },
+            {
+                nombre: "Dior Sauvage EDP [SIN STOCK]",
+                imagenes: ["images/sauvage dior.jpeg"],
+                categoria: "Diseñador",
+                precio: 1111111,
+                descripcion: "",
+                stock: false,
+                notas: {
+                    top: ["Bergamota", "Pimienta"],
+                    middle: ["Lavanda", "Pimienta de Sichuan", "Anís estrellado", "Nuez moscada"],
+                    base: ["Ambroxan", "Vainilla", "Cedro"]
+                }
+            },
+            {
+                nombre: "Jean Paul Gaultier Le Male Elixir [SIN STOCK]",
+                imagenes: ["images/jean paul.jpeg"],
+                categoria: "Diseñador",
+                precio: 11111,
+                descripcion: "",
+                stock: false,
+                notas: {
+                    top: ["Menta", "Lavanda"],
+                    middle: ["Vainilla", "Benjuí"],
+                    base: ["Miel", "Haba tonka", "Tabaco"]
+                }
+            },
+            {
+                nombre: "Valentino Donna Born in Roma [SIN STOCK]",
+                imagenes: ["images/valentino donna.jpeg"],
+                categoria: "Diseñador",
+                precio: 11111111,
+                descripcion: "",
+                stock: false,
+                notas: {
+                    top: ["Grosella negra", "Pimienta rosa", "Bergamota"],
+                    middle: ["Jazmín", "Té de jazmín"],
+                    base: ["Vainilla bourbon", "Cashmeran", "Madera de guayaco"]
+                }
+            },
+            {
+                nombre: "Versace Dylan Blue Pour Homme [SIN STOCK]",
+                imagenes: ["images/dylan blue.jpeg"],
+                categoria: "Diseñador",
+                precio: 111111,
+                descripcion: "",
+                stock: false,
+                notas: {
+                    top: ["Bergamota", "Pomelo", "Hoja de higuera"],
+                    middle: ["Hoja de violeta", "Papiro", "Pachulí", "Pimienta negra"],
+                    base: ["Ambrox", "Almizcle", "Incienso", "Haba tonka"]
+                }
+            }
+        ];
+
+        // Decants
+        const decants = [
+            {
+                nombre: "Al Haramain Amber Oud Gold - Decant 10ml [SIN STOCK]",
+                imagenes: ["https://puntotienda.com.py/wp-content/uploads/2023/02/s-l1600.jpg"],
+                categoria: "Decant Árabe",
+                precio: 111111,
+                descripcion: "",
+                stock: false,
+                notas: {
+                    top: ["Bergamota", "Notas verdes"],
+                    middle: ["Melón", "Piña", "Ámbar"],
+                    base: ["Almizcle", "Vainilla", "Notas amaderadas"]
+                }
+            },
+            {
+                nombre: "Dior Sauvage EDP - Decant 5ml [SIN STOCK]",
+                imagenes: ["https://puntotienda.com.py/wp-content/uploads/2023/02/s-l1600.jpg"],
+                categoria: "Decant Diseñador",
+                precio: 1111111,
+                descripcion: "",
+                stock: false,
+                notas: {
+                    top: ["Bergamota", "Pimienta"],
+                    middle: ["Lavanda", "Pimienta de Sichuan", "Anís estrellado", "Nuez moscada"],
+                    base: ["Ambroxan", "Vainilla", "Cedro"]
+                }
+            },
+            {
+                nombre: "Jean Paul Gaultier Le Male Elixir - Decant 10ml [SIN STOCK]",
+                imagenes: ["https://puntotienda.com.py/wp-content/uploads/2023/02/s-l1600.jpg"],
+                categoria: "Decant Diseñador",
+                precio: 1111111,
+                descripcion: "",
+                stock: false,
+                notas: {
+                    top: ["Menta", "Lavanda"],
+                    middle: ["Vainilla", "Benjuí"],
+                    base: ["Miel", "Haba tonka", "Tabaco"]
+                }
+            },
+            {
+                nombre: "Lattafa Khamrah - Decant 5ml [SIN STOCK]",
+                imagenes: ["https://puntotienda.com.py/wp-content/uploads/2023/02/s-l1600.jpg"],
+                categoria: "Decant Árabe",
+                precio: 111111,
+                descripcion: "",
+                stock: false,
+                notas: {
+                    top: ["Canela", "Nuez moscada", "Bergamota"],
+                    middle: ["Dátiles", "Praliné", "Nardos"],
+                    base: ["Vainilla", "Haba tonka", "Ámbar", "Oud"]
+                }
+            }
+        ];
+
+        // Carrito
+        let currentProduct = null;
+
+        // Renderizado de productos
+        function renderProductos() {
+            const arabesGrid = document.getElementById("arabesGrid");
+            const disenadorGrid = document.getElementById("disenadorGrid");
+            const decantsGrid = document.getElementById("decantsGrid");
+            
+            arabesGrid.innerHTML = "";
+            disenadorGrid.innerHTML = "";
+            decantsGrid.innerHTML = "";
+            
+            // Filtrar y renderizar productos árabes
+            productos.filter(p => p.categoria === "Árabes").forEach(p => {
+                arabesGrid.appendChild(createProductCard(p));
+            });
+            
+            // Filtrar y renderizar productos de diseñador
+            productos.filter(p => p.categoria === "Diseñador").forEach(p => {
+                disenadorGrid.appendChild(createProductCard(p));
+            });
+            
+            // Renderizar decants
+            decants.forEach(p => {
+                decantsGrid.appendChild(createProductCard(p));
+            });
+        }
+
+        function createProductCard(p) {
+            const card = document.createElement("div");
+            card.className = "perfume-card bg-white rounded-lg overflow-hidden cursor-pointer";
+            card.innerHTML = `
+                <div class="w-full h-48 flex items-center justify-center bg-white">
+                    <img src="${p.imagenes[0]}" alt="${p.nombre}" class="max-h-full max-w-full object-contain">
+                </div>
+                <div class="p-4">
+                    <h5 class="font-bold text-lg">${p.nombre}</h5>
+                    <p class="text-gray-600 text-sm">$${p.precio.toLocaleString('es-AR')}</p>
+                    <button class="compare-button mt-2 text-sm text-purple-600 hover:underline">Comparar</button>
+                </div>
+            `;
+            card.addEventListener('click', () => {
+                card.classList.add('clicked');
+                setTimeout(() => card.classList.remove('clicked'), 300);
+                openModalProducto(p);
+            });
+            card.querySelector('.compare-button').addEventListener('click', (e) => {
+                e.stopPropagation();
+                addToCompare(p);
+            });
+            return card;
+        }
+
+        const compareList = [];
+
+        function addToCompare(prod) {
+            if (compareList.some(p => p.nombre === prod.nombre)) return;
+            compareList.push(prod);
+            updateCompareButton();
+            renderCompare();
+        }
+
+        function removeFromCompare(index) {
+            compareList.splice(index, 1);
+            updateCompareButton();
+            renderCompare();
+        }
+
+        function updateCompareButton() {
+            const btn = document.getElementById('compare-btn');
+            const container = document.getElementById('compare-btn-container');
+            if (!btn || !container) return;
+            const count = compareList.length;
+            btn.textContent = `Comparar (${count})`;
+            if (count > 0) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+                const overlay = document.getElementById('compare-overlay');
+                if (overlay) overlay.classList.remove('active');
+            }
+        }
+
+        function renderCompare() {
+            const container = document.getElementById('compare-items');
+            if (!container) return;
+            container.innerHTML = compareList.map((p,i)=>
+                `<div class="border rounded p-3 w-64 relative">
+                    <button class="absolute top-1 right-1 text-red-500" onclick="removeFromCompare(${i})">&times;</button>
+                    <h4 class="font-semibold mb-2">${p.nombre}</h4>
+                    <p class="text-sm mb-2">Precio: $${p.precio.toLocaleString('es-AR')}</p>
+                    <p class="text-xs"><strong>Salida:</strong> ${(p.notas?.top || []).join(', ')}</p>
+                    <p class="text-xs"><strong>Corazón:</strong> ${(p.notas?.middle || []).join(', ')}</p>
+                    <p class="text-xs"><strong>Base:</strong> ${(p.notas?.base || []).join(', ')}</p>
+                </div>`
+            ).join('');
+        }
+
+        function toggleCompare() {
+            document.getElementById('compare-overlay').classList.toggle('active');
+        }
+
+        // Tabs
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+                tab.classList.add('active');
+                const category = tab.dataset.category;
+                document.getElementById(category).classList.remove('hidden');
+            });
+        });
+
+        // Modal de producto
+        function openModalProducto(prod) {
+            currentProduct = prod;
+            document.getElementById('modal-title').textContent = prod.nombre;
+            document.getElementById('modal-category').textContent = prod.categoria;
+            document.getElementById('modal-description').textContent = prod.descripcion || '';
+            document.getElementById('modal-price').textContent = `$${prod.precio.toLocaleString('es-AR')}`;
+            showImage(prod.imagenes[0], prod.nombre);
+
+            const stockElement = document.getElementById('modal-stock');
+            if (prod.stock) {
+                stockElement.style.display = 'flex';
+                stockElement.textContent = 'Disponible';
+                stockElement.className = 'flex items-center bg-green-100 text-green-800 text-xs px-2 py-1 rounded';
+            } else {
+                stockElement.style.display = 'flex';
+                stockElement.textContent = 'Sin stock';
+                stockElement.className = 'flex items-center bg-red-100 text-red-800 text-xs px-2 py-1 rounded';
+            }
+
+            // Miniaturas
+            const thumbs = document.getElementById('thumbnails');
+            thumbs.innerHTML = '';
+            prod.imagenes.forEach((img, i) => {
+                const thumb = document.createElement('img');
+                thumb.src = img;
+                thumb.alt = prod.nombre + ' miniatura ' + (i+1);
+                thumb.className = "gallery-thumbnail rounded cursor-pointer" + (i===0?" selected":"");
+                thumb.onclick = () => {
+                    document.querySelectorAll('#thumbnails .gallery-thumbnail').forEach(t=>t.classList.remove('selected'));
+                    thumb.classList.add('selected');
+                    showImage(img, prod.nombre);
+                };
+                thumbs.appendChild(thumb);
+            });
+
+            // Miniatura de notas
+            if (prod.notas) {
+                const notesThumb = document.createElement('img');
+                notesThumb.src = 'images/notes.svg';
+                notesThumb.alt = 'Ver notas de ' + prod.nombre;
+                notesThumb.className = 'gallery-thumbnail rounded cursor-pointer';
+                notesThumb.onclick = () => {
+                    document.querySelectorAll('#thumbnails .gallery-thumbnail').forEach(t=>t.classList.remove('selected'));
+                    notesThumb.classList.add('selected');
+                    showNotes(prod);
+                };
+                thumbs.appendChild(notesThumb);
+            }
+
+            document.getElementById('modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function showImage(img, alt) {
+            const mainImage = document.getElementById('main-image');
+            const notesContainer = document.getElementById('notes-container');
+            mainImage.src = img;
+            mainImage.alt = alt;
+            mainImage.classList.remove('hidden');
+            notesContainer.classList.add('hidden');
+            notesContainer.innerHTML = '';
+        }
+
+        function showNotes(prod) {
+            const mainImage = document.getElementById('main-image');
+            const notesContainer = document.getElementById('notes-container');
+            mainImage.classList.add('hidden');
+            notesContainer.classList.remove('hidden');
+            notesContainer.innerHTML = '';
+
+            const sections = [
+                { titulo: 'Salida', notas: prod.notas?.top || [] },
+                { titulo: 'Corazón', notas: prod.notas?.middle || [] },
+                { titulo: 'Fondo', notas: prod.notas?.base || [] }
+            ];
+
+            sections.forEach(sec => {
+                if (sec.notas.length) {
+                    const h = document.createElement('h4');
+                    h.className = 'font-semibold mt-2';
+                    h.textContent = 'Notas de ' + sec.titulo;
+                    notesContainer.appendChild(h);
+
+                    const div = document.createElement('div');
+                    div.className = 'flex flex-wrap gap-2 mb-2';
+                    sec.notas.forEach(n => {
+                        const span = document.createElement('span');
+                        span.className = 'note-tag bg-gray-200 rounded-full px-2 py-1 text-sm cursor-pointer hover:bg-yellow-200';
+                        span.textContent = n;
+                        span.onclick = () => compareNote(n, prod.nombre);
+                        div.appendChild(span);
+                    });
+                    notesContainer.appendChild(div);
+                }
+            });
+
+            const compareDiv = document.createElement('div');
+            compareDiv.id = 'compare-list';
+            notesContainer.appendChild(compareDiv);
+        }
+
+        function compareNote(note, currentName) {
+            const compareDiv = document.getElementById('compare-list');
+            const others = [...productos, ...decants].filter(p => p.nombre !== currentName && p.notas && Object.values(p.notas).some(arr => arr.includes(note)));
+            if (!others.length) {
+                compareDiv.innerHTML = `<p class="mt-4 text-sm text-gray-600">Ningún otro perfume comparte la nota ${note}.</p>`;
+                return;
+            }
+            compareDiv.innerHTML = `<p class="mt-4 text-sm font-medium">Comparte esta nota con:</p>` +
+                '<ul class="list-disc list-inside text-sm text-gray-700">' +
+                others.map(o => `<li>${o.nombre}</li>`).join('') + '</ul>';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Funcionalidad del carrito
+        function toggleCart() {
+            document.querySelector('.cart-overlay').classList.toggle('active');
+            updateCart();
+        }
+
+        function handleAddToCart() {
+            if (!currentProduct) return;
+            addToCart(currentProduct);
+            updateCart();
+            closeModal();
+            showNotification(`${currentProduct.nombre} agregado al carrito`);
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+            showNotification('Producto eliminado del carrito');
+        }
+
+        function checkout() {
+            if (cart.length === 0) return;
+            
+            const whatsappNumber = "+5491138722792";
+            let message = "Hola, estoy interesado en los siguientes productos:\n\n";
+            
+            cart.forEach(item => {
+                message += `- ${item.name} (${item.quantity} x $${item.price.toLocaleString('es-AR')})\n`;
+            });
+            
+            message += `\nTotal: $${cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString('es-AR')}`;
+            
+            window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        function buyNow() {
+            if (!currentProduct) return;
+            
+            const whatsappNumber = "+5491138722792";
+            const message = `Hola, me interesa comprar: ${currentProduct.nombre} - $${currentProduct.precio.toLocaleString('es-AR')}`;
+            window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+            closeModal();
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Close modal when clicking outside content
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modal')) {
+                closeModal();
+            }
+        });
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const stockData = await getStockLevels();
+                stockData.forEach(item => {
+                    const prod = productos.find(p => p.nombre === item.Producto);
+                    if (prod) prod.stock = item.Cantidad > 0;
+                });
+            } catch (err) {
+                console.error('Error fetching stock', err);
+            }
+            renderProductos();
+            updateCompareButton();
+
+            const orderForm = document.getElementById('order-form');
+            if (orderForm) {
+                orderForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('order-name').value;
+                    const perfume = document.getElementById('order-perfume').value;
+                    const quantity = document.getElementById('order-quantity').value;
+                    const whatsappNumber = '+5491138722792';
+                    const message = `Hola, soy ${name}. Quiero pedir ${quantity} x ${perfume}.`;
+                    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+                    document.getElementById('order-message').textContent = 'Redirigiendo a WhatsApp...';
+                    orderForm.reset();
+                });
+            }
+        });
+    </script>
 </body>
 </html>
