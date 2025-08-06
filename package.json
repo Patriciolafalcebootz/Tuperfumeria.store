@@ -1,12 +1,21 @@
 {
-  "name": "tuperfumeria-web",
+  "name": "tuperfumeria.store",
   "version": "1.0.0",
-  "description": "Sitio web estático de TuPerfumería",
-  "main": "server.js",
+  "description": "",
+  "main": "cart.js",
+  "directories": {
+    "test": "tests"
+  },
   "scripts": {
+    "test": "node --test",
     "start": "node server.js"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.18.2",
+    "xlsx": "^0.18.5"
   }
 }
