@@ -48,7 +48,7 @@ function updateCart() {
     const itemElement = document.createElement('div');
     itemElement.className = 'cart-item';
     itemElement.innerHTML = `
-                    <img src="${item.image}" alt="${item.name}" class="rounded">
+                    <img src="${item.image}" alt="${item.name}" loading="lazy" class="rounded">
                     <div class="flex-1">
                         <h4 class="font-medium">${item.name}</h4>
                         <p class="text-sm text-gray-600">$${item.price.toLocaleString('es-AR')} x ${item.quantity}</p>
