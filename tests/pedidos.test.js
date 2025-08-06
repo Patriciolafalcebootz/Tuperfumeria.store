@@ -1,6 +1,7 @@
-// Ejemplo de test (a personalizar)
-describe('Pedidos', () => {
-  it('envía un pedido', () => {
-    // tu lógica de test aquí
-  });
+const test = require('node:test');
+const assert = require('node:assert');
+
+test('envía un pedido', () => {
+  // Lógica de prueba placeholder
+  assert.ok(true);
 });
