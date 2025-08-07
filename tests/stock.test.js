@@ -3,8 +3,7 @@ const assert = require('node:assert');
 
 test('actualiza las cantidades de stock', () => {
   const productos = [
-    { nombre: 'Perfume A', stock: 0 },
-    { nombre: 'Perfume B', stock: 0 }
+
   ];
   const stockData = [
     { Producto: 'Perfume A', Cantidad: 0 },
@@ -12,7 +11,7 @@ test('actualiza las cantidades de stock', () => {
   ];
 
   const allProducts = [...productos];
-  allProducts.forEach(p => p.stock = 0);
+
   stockData.forEach(item => {
     const prod = allProducts.find(p =>
       p.nombre.trim().toLowerCase() === item.Producto.trim().toLowerCase()
