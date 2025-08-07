@@ -754,12 +754,8 @@
         function createProductCard(p) {
             const card = document.createElement("div");
             card.className = "perfume-card bg-white rounded-lg overflow-hidden cursor-pointer";
-            const stockText = typeof p.stockQty === 'number'
-                ? (p.stockQty > 0 ? `Stock: ${p.stockQty}` : 'Sin stock')
-                : (p.stock ? 'Disponible' : 'Sin stock');
-            const stockColor = (typeof p.stockQty === 'number'
-                ? (p.stockQty > 0)
-                : p.stock) ? 'text-green-600' : 'text-red-600';
+            const stockText = p.stock ? 'Disponible' : 'No disponible';
+            const stockColor = p.stock ? 'text-green-600' : 'text-red-600';
             card.innerHTML = `
                 <div class="w-full h-48 flex items-center justify-center bg-white">
                     <img src="${p.imagenes[0]}" alt="${p.nombre}" loading="lazy" class="max-h-full max-w-full object-contain">
@@ -880,19 +876,11 @@
 
             const stockElement = document.getElementById('modal-stock');
             stockElement.style.display = 'flex';
-            if (typeof prod.stockQty === 'number') {
-                if (prod.stockQty > 0) {
-                    stockElement.textContent = `Stock: ${prod.stockQty}`;
-                    stockElement.className = 'flex items-center bg-green-100 text-green-800 text-xs px-2 py-1 rounded';
-                } else {
-                    stockElement.textContent = 'Sin stock';
-                    stockElement.className = 'flex items-center bg-red-100 text-red-800 text-xs px-2 py-1 rounded';
-                }
-            } else if (prod.stock) {
+            if (prod.stock) {
                 stockElement.textContent = 'Disponible';
                 stockElement.className = 'flex items-center bg-green-100 text-green-800 text-xs px-2 py-1 rounded';
             } else {
-                stockElement.textContent = 'Sin stock';
+                stockElement.textContent = 'No disponible';
                 stockElement.className = 'flex items-center bg-red-100 text-red-800 text-xs px-2 py-1 rounded';
             }
 
@@ -1064,11 +1052,11 @@
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const stockData = await getStockLevels();
+                const allProducts = [...productos, ...decants];
                 stockData.forEach(item => {
-                    const prod = productos.find(p => p.nombre === item.Producto);
+                    const prod = allProducts.find(p => p.nombre === item.Producto);
                     if (prod) {
-                        prod.stockQty = item.Cantidad;
-                        prod.stock = item.Cantidad > 0;
+                        prod.stock = item.Cantidad !== 0;
                     }
                 });
             } catch (err) {
