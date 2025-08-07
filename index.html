@@ -574,7 +574,7 @@
             },
             // Diseñador
             {
-                nombre: "Azzaro The Most Wanted EDP Intense [SIN STOCK]",
+                nombre: "Azzaro The Most Wanted EDP Intense",
                 imagenes: ["images/azzaro most wanted.jpeg"],
                 categoria: "Diseñador",
                 precio: 11111,
@@ -587,7 +587,7 @@
                 }
             },
             {
-                nombre: "Carolina Herrera 212 VIP Rose Elixir [SIN STOCK]",
+                nombre: "Carolina Herrera 212 VIP Rose Elixir",
                 imagenes: ["images/212 vip rose.jpeg"],
                 categoria: "Diseñador",
                 precio: 11111,
@@ -600,7 +600,7 @@
                 }
             },
             {
-                nombre: "Carolina Herrera Good Girl [SIN STOCK]",
+                nombre: "Carolina Herrera Good Girl",
                 imagenes: ["images/good girl.jpeg"],
                 categoria: "Diseñador",
                 precio: 1111111,
@@ -613,7 +613,7 @@
                 }
             },
             {
-                nombre: "Dior Sauvage EDP [SIN STOCK]",
+                nombre: "Dior Sauvage EDP",
                 imagenes: ["images/sauvage dior.jpeg"],
                 categoria: "Diseñador",
                 precio: 1111111,
@@ -626,7 +626,7 @@
                 }
             },
             {
-                nombre: "Jean Paul Gaultier Le Male Elixir [SIN STOCK]",
+                nombre: "Jean Paul Gaultier Le Male Elixir",
                 imagenes: ["images/jean paul.jpeg"],
                 categoria: "Diseñador",
                 precio: 11111,
@@ -639,7 +639,7 @@
                 }
             },
             {
-                nombre: "Valentino Donna Born in Roma [SIN STOCK]",
+                nombre: "Valentino Donna Born in Roma",
                 imagenes: ["images/valentino donna.jpeg"],
                 categoria: "Diseñador",
                 precio: 11111111,
@@ -652,7 +652,7 @@
                 }
             },
             {
-                nombre: "Versace Dylan Blue Pour Homme [SIN STOCK]",
+                nombre: "Versace Dylan Blue Pour Homme",
                 imagenes: ["images/dylan blue.jpeg"],
                 categoria: "Diseñador",
                 precio: 111111,
@@ -669,7 +669,7 @@
         // Decants
         const decants = [
             {
-                nombre: "Al Haramain Amber Oud Gold - Decant 10ml [SIN STOCK]",
+                nombre: "Al Haramain Amber Oud Gold - Decant 10ml",
                 imagenes: ["https://puntotienda.com.py/wp-content/uploads/2023/02/s-l1600.jpg"],
                 categoria: "Decant Árabe",
                 precio: 111111,
@@ -682,7 +682,7 @@
                 }
             },
             {
-                nombre: "Dior Sauvage EDP - Decant 5ml [SIN STOCK]",
+                nombre: "Dior Sauvage EDP - Decant 5ml",
                 imagenes: ["https://puntotienda.com.py/wp-content/uploads/2023/02/s-l1600.jpg"],
                 categoria: "Decant Diseñador",
                 precio: 1111111,
@@ -695,7 +695,7 @@
                 }
             },
             {
-                nombre: "Jean Paul Gaultier Le Male Elixir - Decant 10ml [SIN STOCK]",
+                nombre: "Jean Paul Gaultier Le Male Elixir - Decant 10ml",
                 imagenes: ["https://puntotienda.com.py/wp-content/uploads/2023/02/s-l1600.jpg"],
                 categoria: "Decant Diseñador",
                 precio: 1111111,
@@ -708,7 +708,7 @@
                 }
             },
             {
-                nombre: "Lattafa Khamrah - Decant 5ml [SIN STOCK]",
+                nombre: "Lattafa Khamrah - Decant 5ml",
                 imagenes: ["https://puntotienda.com.py/wp-content/uploads/2023/02/s-l1600.jpg"],
                 categoria: "Decant Árabe",
                 precio: 111111,
@@ -754,7 +754,7 @@
         function createProductCard(p) {
             const card = document.createElement("div");
             card.className = "perfume-card bg-white rounded-lg overflow-hidden cursor-pointer";
-            const stockText = p.stock ? 'Disponible' : 'No disponible';
+            const stockText = p.stock ? 'Disponible' : 'Sin stock';
             const stockColor = p.stock ? 'text-green-600' : 'text-red-600';
             card.innerHTML = `
                 <div class="w-full h-48 flex items-center justify-center bg-white">
@@ -880,7 +880,7 @@
                 stockElement.textContent = 'Disponible';
                 stockElement.className = 'flex items-center bg-green-100 text-green-800 text-xs px-2 py-1 rounded';
             } else {
-                stockElement.textContent = 'No disponible';
+                stockElement.textContent = 'Sin stock';
                 stockElement.className = 'flex items-center bg-red-100 text-red-800 text-xs px-2 py-1 rounded';
             }
 
