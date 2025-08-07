@@ -1050,13 +1050,19 @@
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', async () => {
+            const allProducts = [...productos, ...decants];
+            // Inicializar el stock en "sin stock" por defecto
+            allProducts.forEach(p => p.stock = false);
+
             try {
                 const stockData = await getStockLevels();
-                const allProducts = [...productos, ...decants];
                 stockData.forEach(item => {
-                    const prod = allProducts.find(p => p.nombre === item.Producto);
+                    const prod = allProducts.find(p =>
+                        p.nombre.trim().toLowerCase() === item.Producto.trim().toLowerCase()
+                    );
                     if (prod) {
-                        prod.stock = item.Cantidad !== 0;
+                        // Aseguramos que la cantidad se interprete como número
+                        prod.stock = Number(item.Cantidad) > 0;
                     }
                 });
             } catch (err) {
