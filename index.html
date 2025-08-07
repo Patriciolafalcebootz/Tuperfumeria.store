@@ -364,8 +364,10 @@
                         <h3 id="modal-title" class="text-3xl font-bold mb-2"></h3>
                         <span id="modal-category" class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mb-4"></span>
                         
-                        <p id="modal-description" class="text-gray-700 mb-6"></p>
-                        
+                        <p id="modal-description" class="text-gray-700 mb-4"></p>
+                        <p id="modal-similar" class="text-gray-700 mb-2"></p>
+                        <div id="modal-comparisons" class="text-sm text-gray-600 mb-6"></div>
+
                         <div class="flex items-center mb-4">
                             <span class="text-2xl font-bold mr-4" id="modal-price"></span>
                             <div class="flex items-center bg-green-100 text-green-800 text-xs px-2 py-1 rounded" id="modal-stock">
@@ -395,6 +397,8 @@
                 imagenes: ["images/Amber oud gold.jpeg"],
                 categoria: "Árabes",
                 precio: 85000,
+                similar: "Xerjoff Erba Pura",
+                comparaciones: [{ tienda: "FraganciasVIP", precio: 180000 }],
                 descripcion: "",
                 stock: true,
                 notas: {
@@ -408,6 +412,8 @@
                 imagenes: ["images/Club de nuit intense.jpeg"],
                 categoria: "Árabes",
                 precio: 48000,
+                similar: "Creed Aventus",
+                comparaciones: [{ tienda: "Creed Boutique", precio: 450000 }],
                 descripcion: "",
                 stock: true,
                 notas: {
@@ -421,6 +427,8 @@
                 imagenes: ["images/Mandarin sky.jpeg"],
                 categoria: "Árabes",
                 precio: 64000,
+                similar: "Louis Vuitton Afternoon Swim",
+                comparaciones: [{ tienda: "Louis Vuitton", precio: 350000 }],
                 descripcion: "",
                 stock: true,
                 notas: {
@@ -434,6 +442,8 @@
                 imagenes: ["images/Yara bourbon.jpeg"],
                 categoria: "Árabes",
                 precio: 62000,
+                similar: "Dior Sauvage Elixir",
+                comparaciones: [{ tienda: "Dior", precio: 260000 }],
                 descripcion: "",
                 stock: true,
                 notas: {
@@ -473,6 +483,8 @@
                 imagenes: ["images/Khamrah.jpeg"],
                 categoria: "Árabes",
                 precio: 52000,
+                similar: "Kilian Angels' Share",
+                comparaciones: [{ tienda: "Kilian Official", precio: 320000 }],
                 descripcion: "",
                 stock: true,
                 notas: {
@@ -816,6 +828,16 @@
             document.getElementById('modal-title').textContent = prod.nombre;
             document.getElementById('modal-category').textContent = prod.categoria;
             document.getElementById('modal-description').textContent = prod.descripcion || '';
+            document.getElementById('modal-similar').textContent = prod.similar ? `Similar a: ${prod.similar}` : '';
+            const comparisonsEl = document.getElementById('modal-comparisons');
+            if (prod.comparaciones && prod.comparaciones.length) {
+                comparisonsEl.innerHTML = '<p class="font-medium mb-1">Precios en otras páginas:</p>' +
+                    '<ul class="list-disc list-inside">' +
+                    prod.comparaciones.map(c => `<li>${c.tienda}: $${c.precio.toLocaleString('es-AR')}</li>`).join('') +
+                    '</ul>';
+            } else {
+                comparisonsEl.innerHTML = '';
+            }
             document.getElementById('modal-price').textContent = `$${prod.precio.toLocaleString('es-AR')}`;
             showImage(prod.imagenes[0], prod.nombre);
 
