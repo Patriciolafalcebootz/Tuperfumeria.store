@@ -1,10 +1,10 @@
 const test = require('node:test');
 const assert = require('node:assert');
 
-test('actualiza el estado de stock en base a la cantidad', () => {
+test('actualiza las cantidades de stock', () => {
   const productos = [
-    { nombre: 'Perfume A', stock: true },
-    { nombre: 'Perfume B', stock: true }
+    { nombre: 'Perfume A', stock: 0 },
+    { nombre: 'Perfume B', stock: 0 }
   ];
   const stockData = [
     { Producto: 'Perfume A', Cantidad: 0 },
@@ -12,16 +12,16 @@ test('actualiza el estado de stock en base a la cantidad', () => {
   ];
 
   const allProducts = [...productos];
-  allProducts.forEach(p => p.stock = false);
+  allProducts.forEach(p => p.stock = 0);
   stockData.forEach(item => {
     const prod = allProducts.find(p =>
       p.nombre.trim().toLowerCase() === item.Producto.trim().toLowerCase()
     );
     if (prod) {
-      prod.stock = Number(item.Cantidad) > 0;
+      prod.stock = Number(item.Cantidad) || 0;
     }
   });
 
-  assert.strictEqual(allProducts[0].stock, false);
-  assert.strictEqual(allProducts[1].stock, true);
+  assert.strictEqual(allProducts[0].stock, 0);
+  assert.strictEqual(allProducts[1].stock, 2);
 });
