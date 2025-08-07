@@ -761,6 +761,7 @@
         }
 
         function createProductCard(p) {
+            const { text: stockText, textColor: stockColor } = formatStockInfo(p.stock);
             const card = document.createElement("div");
             card.className = "perfume-card bg-white rounded-lg overflow-hidden cursor-pointer";
 
