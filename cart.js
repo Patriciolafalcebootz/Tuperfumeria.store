@@ -86,11 +86,6 @@ async function submitOrder(order) {
 async function checkout() {
   try {
     await submitOrder({ items: cart });
-    await fetch('/api/stock', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: cart })
-    });
     cart.length = 0;
     updateCart();
   } catch (err) {
