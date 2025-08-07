@@ -68,7 +68,7 @@ function updateCart() {
 }
 
 async function getStockLevels() {
-  const res = await fetch('/api/stock');
+  const res = await fetch('data/stock.json');
   if (!res.ok) throw new Error('Failed to fetch stock');
   return res.json();
 }
