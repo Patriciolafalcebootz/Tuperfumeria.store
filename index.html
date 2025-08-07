@@ -850,15 +850,31 @@
             document.getElementById('modal-category').textContent = prod.categoria;
             document.getElementById('modal-description').textContent = prod.descripcion || '';
             document.getElementById('modal-similar').textContent = prod.similar ? `Similar a: ${prod.similar}` : '';
+
             const comparisonsEl = document.getElementById('modal-comparisons');
-            if (prod.comparaciones && prod.comparaciones.length) {
-                comparisonsEl.innerHTML = '<p class="font-medium mb-1">Precios en otras páginas:</p>' +
-                    '<ul class="list-disc list-inside">' +
-                    prod.comparaciones.map(c => `<li>${c.tienda}: $${c.precio.toLocaleString('es-AR')}</li>`).join('') +
-                    '</ul>';
-            } else {
-                comparisonsEl.innerHTML = '';
-            }
+            const comps = prod.comparaciones ? [...prod.comparaciones] : [];
+            comparisonsEl.innerHTML = '';
+            fetch(`https://api.mercadolibre.com/sites/MLA/search?q=${encodeURIComponent(prod.nombre)}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.results && data.results[0]) {
+                        const price = data.results[0].price;
+                        const existingMl = comps.find(c => c.tienda === 'Mercado Libre');
+                        if (existingMl) {
+                            existingMl.precio = price;
+                        } else {
+                            comps.push({ tienda: 'Mercado Libre', precio: price });
+                        }
+                    }
+                    if (comps.length) {
+                        comparisonsEl.innerHTML = '<p class="font-medium mb-1">Precios en otras páginas:</p>' +
+                            '<ul class="list-disc list-inside">' +
+                            comps.map(c => `<li>${c.tienda}: $${c.precio.toLocaleString('es-AR')}</li>`).join('') +
+                            '</ul>';
+                    }
+                })
+                .catch(err => console.error('Error fetching comparison prices', err));
+
             document.getElementById('modal-price').textContent = `$${prod.precio.toLocaleString('es-AR')}`;
             showImage(prod.imagenes[0], prod.nombre);
 
