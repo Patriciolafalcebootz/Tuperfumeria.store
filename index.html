@@ -1056,23 +1056,26 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const allProducts = [...productos, ...decants];
 
-
-            try {
-                const stockData = await getStockLevels();
-                stockData.forEach(item => {
-                    const prod = allProducts.find(p =>
-                        p.nombre.trim().toLowerCase() === item.Producto.trim().toLowerCase()
-                    );
-                    if (prod) {
-                        // Aseguramos que la cantidad se interprete como número
-                        prod.stock = Number(item.Cantidad) || 0;
-                    }
-                });
-            } catch (err) {
-                console.error('Error fetching stock', err);
+            async function refreshStock() {
+                try {
+                    const stockData = await getStockLevels();
+                    stockData.forEach(item => {
+                        const prod = allProducts.find(p =>
+                            p.nombre.trim().toLowerCase() === item.Producto.trim().toLowerCase()
+                        );
+                        if (prod) {
+                            prod.stock = Number(item.Cantidad) || 0;
+                        }
+                    });
+                    renderProductos();
+                } catch (err) {
+                    console.error('Error fetching stock', err);
+                }
             }
-            renderProductos();
+
+            await refreshStock();
             updateCompareButton();
+            setInterval(refreshStock, 60000);
 
             const orderForm = document.getElementById('order-form');
             if (orderForm) {
