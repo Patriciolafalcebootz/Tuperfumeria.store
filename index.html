@@ -1092,8 +1092,11 @@
         });
 
         // Inicialización
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', () => {
             const allProducts = [...productos, ...decants];
+
+            // Renderizamos inicialmente para mostrar el catálogo sin depender del stock
+            renderProductos();
 
             async function refreshStock() {
                 try {
@@ -1109,13 +1112,13 @@
                 } catch (err) {
                     console.error('Error fetching stock', err);
                 } finally {
-                    // Renderizamos los productos aunque falle la carga de stock
-                    // para que el catálogo sea visible con stock por defecto
+                    // Re-renderizamos para actualizar los niveles de stock
                     renderProductos();
                 }
             }
 
-            await refreshStock();
+            // Actualizamos el stock en segundo plano
+            refreshStock();
             updateCompareButton();
             setInterval(refreshStock, 60000);
 
