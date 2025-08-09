@@ -774,6 +774,7 @@
 
         // Carrito
         let currentProduct = null;
+        let refreshStock;
 
         // Renderizado de productos
         function renderProductos() {
@@ -1056,6 +1057,7 @@
                 updateCart();
                 closeModal();
                 showNotification(`${currentProduct.nombre} agregado al carrito`);
+                if (refreshStock) await refreshStock();
             } catch (err) {
                 showNotification('No se pudo reservar stock');
             }
@@ -1063,6 +1065,7 @@
 
         async function checkout() {
             if (cart.length === 0) return;
+            const items = cart.slice();
             try {
                 await commitCart();
             } catch (err) {
@@ -1073,13 +1076,17 @@
             const whatsappNumber = "+5491138722792";
             let message = "Hola, estoy interesado en los siguientes productos:\n\n";
 
-            cart.forEach(item => {
+            items.forEach(item => {
                 message += `- ${item.name} (${item.quantity} x $${item.price.toLocaleString('es-AR')})\n`;
             });
 
-            message += `\nTotal: $${cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString('es-AR')}`;
+            message += `\nTotal: $${items.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString('es-AR')}`;
 
             window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+
+            cart.length = 0;
+            updateCart();
+            if (refreshStock) await refreshStock();
         }
 
         function buyNow() {
@@ -1114,7 +1121,7 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const allProducts = [...productos, ...decants];
 
-            async function refreshStock() {
+            refreshStock = async function() {
                 try {
                     const stockData = await getStockLevels();
                     stockData.forEach(item => {
@@ -1134,10 +1141,15 @@
                     // Re-renderizamos para actualizar los niveles de stock
                     renderProductos();
                 }
-            }
+            };
 
             // Cargamos el stock antes de renderizar el catálogo
             await refreshStock();
+            const originalRemoveFromCart = window.removeFromCart;
+            window.removeFromCart = async (index) => {
+                await originalRemoveFromCart(index);
+                if (refreshStock) await refreshStock();
+            };
             updateCompareButton();
             setInterval(refreshStock, 60000);
 
