@@ -1106,9 +1106,12 @@
                             prod.stock = Number(item.Cantidad) || 0;
                         }
                     });
-                    renderProductos();
                 } catch (err) {
                     console.error('Error fetching stock', err);
+                } finally {
+                    // Renderizamos los productos aunque falle la carga de stock
+                    // para que el catálogo sea visible con stock por defecto
+                    renderProductos();
                 }
             }
 
