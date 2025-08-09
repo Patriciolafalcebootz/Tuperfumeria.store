@@ -268,7 +268,6 @@
                 <h2 class="text-3xl font-bold mb-4 md:mb-6">Nuestro Catálogo</h2>
                 <div class="flex flex-wrap gap-4 mb-6">
                     <button class="category-tab px-4 py-2 font-medium bg-gray-100 rounded-lg active" data-category="arabes">Árabes</button>
-                    <button class="category-tab px-4 py-2 font-medium bg-gray-100 rounded-lg" data-category="disenador">Diseñador</button>
                     <button class="category-tab px-4 py-2 font-medium bg-gray-100 rounded-lg" data-category="decants">Decants</button>
                 </div>
             </div>
@@ -280,12 +279,6 @@
             <div id="arabes" class="tab-panel active">
                 <h3 class="text-2xl font-semibold mb-6 text-center">Perfumes Árabes</h3>
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16" id="arabesGrid"></div>
-            </div>
-            
-            <!-- Diseñador Tab -->
-            <div id="disenador" class="tab-panel hidden">
-                <h3 class="text-2xl font-semibold mb-6 text-center">Perfumes de Diseñador</h3>
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16" id="disenadorGrid"></div>
             </div>
             
             <!-- Decants Tab -->
@@ -706,55 +699,42 @@
         // Decants
         const decants = [
             {
-                nombre: "Al Haramain Amber Oud Gold - Decant 10ml",
-                imagenes: ["https://puntotienda.com.py/wp-content/uploads/2023/02/s-l1600.jpg"],
-                categoria: "Decant Árabe",
-                precio: 111111,
-                descripcion: "",
-
-                notas: {
-                    top: ["Bergamota", "Notas verdes"],
-                    middle: ["Melón", "Piña", "Ámbar"],
-                    base: ["Almizcle", "Vainilla", "Notas amaderadas"]
-                }
-            },
-            {
-                nombre: "Dior Sauvage EDP - Decant 5ml",
+                nombre: "LIBRE BY YVES SAINT LAURENT EDP 90ML",
                 imagenes: ["https://puntotienda.com.py/wp-content/uploads/2023/02/s-l1600.jpg"],
                 categoria: "Decant Diseñador",
-                precio: 1111111,
+                precio: 22500,
+                stock: 9,
                 descripcion: "",
-
                 notas: {
-                    top: ["Bergamota", "Pimienta"],
-                    middle: ["Lavanda", "Pimienta de Sichuan", "Anís estrellado", "Nuez moscada"],
-                    base: ["Ambroxan", "Vainilla", "Cedro"]
+                    top: [],
+                    middle: [],
+                    base: []
                 }
             },
             {
-                nombre: "Jean Paul Gaultier Le Male Elixir - Decant 10ml",
+                nombre: "GOOD GIRL BY CAROLINA HERRERA EDP 80ML",
                 imagenes: ["https://puntotienda.com.py/wp-content/uploads/2023/02/s-l1600.jpg"],
                 categoria: "Decant Diseñador",
-                precio: 1111111,
+                precio: 21000,
+                stock: 8,
                 descripcion: "",
-
                 notas: {
-                    top: ["Menta", "Lavanda"],
-                    middle: ["Vainilla", "Benjuí"],
-                    base: ["Miel", "Haba tonka", "Tabaco"]
+                    top: [],
+                    middle: [],
+                    base: []
                 }
             },
             {
-                nombre: "Lattafa Khamrah - Decant 5ml",
+                nombre: "J'ADORE BY DIOR EDP 100ML",
                 imagenes: ["https://puntotienda.com.py/wp-content/uploads/2023/02/s-l1600.jpg"],
-                categoria: "Decant Árabe",
-                precio: 111111,
+                categoria: "Decant Diseñador",
+                precio: 21000,
+                stock: 10,
                 descripcion: "",
-
                 notas: {
-                    top: ["Canela", "Nuez moscada", "Bergamota"],
-                    middle: ["Dátiles", "Praliné", "Nardos"],
-                    base: ["Vainilla", "Haba tonka", "Ámbar", "Oud"]
+                    top: [],
+                    middle: [],
+                    base: []
                 }
             }
         ];
@@ -767,21 +747,23 @@
             const arabesGrid = document.getElementById("arabesGrid");
             const disenadorGrid = document.getElementById("disenadorGrid");
             const decantsGrid = document.getElementById("decantsGrid");
-            
+
             arabesGrid.innerHTML = "";
-            disenadorGrid.innerHTML = "";
+            if (disenadorGrid) disenadorGrid.innerHTML = "";
             decantsGrid.innerHTML = "";
-            
+
             // Filtrar y renderizar productos árabes
             productos.filter(p => p.categoria === "Árabes").forEach(p => {
                 arabesGrid.appendChild(createProductCard(p));
             });
-            
-            // Filtrar y renderizar productos de diseñador
-            productos.filter(p => p.categoria === "Diseñador").forEach(p => {
-                disenadorGrid.appendChild(createProductCard(p));
-            });
-            
+
+            // Filtrar y renderizar productos de diseñador solo si el grid existe
+            if (disenadorGrid) {
+                productos.filter(p => p.categoria === "Diseñador").forEach(p => {
+                    disenadorGrid.appendChild(createProductCard(p));
+                });
+            }
+
             // Renderizar decants
             decants.forEach(p => {
                 decantsGrid.appendChild(createProductCard(p));
