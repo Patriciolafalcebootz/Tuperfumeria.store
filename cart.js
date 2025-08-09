@@ -1,22 +1,48 @@
 let cart = [];
+let stockClient = null;
 
-function addToCart(product) {
-  if (!product) return;
+function setStockClient(client) {
+  stockClient = client;
+}
+
+async function addToCart(product) {
+  if (!product) return cart;
 
   const item = {
     name: product.nombre,
     price: product.precio,
     image: product.imagenes[0],
-    quantity: 1
+    quantity: 1,
+    sku: product.sku,
+    version: product.version
   };
 
-  const existingItem = cart.find((p) => p.name === item.name);
+  if (stockClient) {
+    const r = await stockClient.reserve(item.sku, 1, item.version);
+    item.reservationId = r.id;
+    item.version = r.version;
+  }
+
+  const existingItem = cart.find((p) => p.sku === item.sku);
   if (existingItem) {
     existingItem.quantity += 1;
   } else {
     cart.push(item);
   }
 
+  return cart;
+}
+
+async function removeFromCart(index) {
+  const item = cart[index];
+  if (!item) return cart;
+  if (stockClient && item.reservationId) {
+    try {
+      await stockClient.release(item.reservationId);
+    } catch (_) {}
+  }
+  cart.splice(index, 1);
+  if (typeof document !== 'undefined') updateCart();
   return cart;
 }
 
@@ -68,9 +94,8 @@ function updateCart() {
 }
 
 async function getStockLevels() {
-  const res = await fetch(`/api/stock?t=${Date.now()}`, {
-    cache: 'no-store'
-  });
+  if (stockClient) return stockClient.getAll();
+  const res = await fetch(`/api/stock?t=${Date.now()}`, { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch stock');
   return res.json();
 }
@@ -85,23 +110,36 @@ async function submitOrder(order) {
   return res.json();
 }
 
+async function commitCart() {
+  if (!stockClient) return;
+  const items = cart.map((item) => ({
+    reservationId: item.reservationId,
+    sku: item.sku,
+    version: item.version
+  }));
+  await stockClient.commit(items);
+}
+
 async function checkout() {
   try {
-    await submitOrder({ items: cart });
+    await commitCart();
     cart.length = 0;
     updateCart();
   } catch (err) {
     console.error('Checkout failed', err);
+    throw err;
   }
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { cart, addToCart, updateCart, getStockLevels, submitOrder, checkout };
+  module.exports = { cart, addToCart, removeFromCart, updateCart, getStockLevels, submitOrder, checkout, commitCart, setStockClient };
 } else {
   window.cart = cart;
   window.addToCart = addToCart;
+  window.removeFromCart = removeFromCart;
   window.updateCart = updateCart;
   window.getStockLevels = getStockLevels;
   window.submitOrder = submitOrder;
   window.checkout = checkout;
+  window.commitCart = commitCart;
 }

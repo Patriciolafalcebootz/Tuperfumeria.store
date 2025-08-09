@@ -381,6 +381,7 @@
         </div>
     </div>
 
+    <script src="stockClient.js"></script>
     <script src="cart.js"></script>
     <script>
         // La constante productos incluye categorías "Árabes" y "Diseñador"; las decants se definen aparte
@@ -739,6 +740,15 @@
             }
         ];
 
+        function slugify(str) {
+            return str.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        }
+
+        productos.forEach(p => { p.sku = slugify(p.nombre); p.version = 1; });
+        decants.forEach(p => { p.sku = slugify(p.nombre); p.version = 1; });
+
+        setStockClient(new StockClient('/api/stock'));
+
         // Carrito
         let currentProduct = null;
 
@@ -1016,32 +1026,36 @@
             updateCart();
         }
 
-        function handleAddToCart() {
+        async function handleAddToCart() {
             if (!currentProduct) return;
-            addToCart(currentProduct);
-            updateCart();
-            closeModal();
-            showNotification(`${currentProduct.nombre} agregado al carrito`);
+            try {
+                await addToCart(currentProduct);
+                updateCart();
+                closeModal();
+                showNotification(`${currentProduct.nombre} agregado al carrito`);
+            } catch (err) {
+                showNotification('No se pudo reservar stock');
+            }
         }
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCart();
-            showNotification('Producto eliminado del carrito');
-        }
-
-        function checkout() {
+        async function checkout() {
             if (cart.length === 0) return;
-            
+            try {
+                await commitCart();
+            } catch (err) {
+                showNotification('No hay stock suficiente');
+                return;
+            }
+
             const whatsappNumber = "+5491138722792";
             let message = "Hola, estoy interesado en los siguientes productos:\n\n";
-            
+
             cart.forEach(item => {
                 message += `- ${item.name} (${item.quantity} x $${item.price.toLocaleString('es-AR')})\n`;
             });
-            
+
             message += `\nTotal: $${cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString('es-AR')}`;
-            
+
             window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
         }
 
