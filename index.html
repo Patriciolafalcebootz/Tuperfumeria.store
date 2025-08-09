@@ -767,8 +767,15 @@
             return str.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         }
 
-        productos.forEach(p => { p.version = 1; });
-        decants.forEach(p => { p.sku = slugify(p.nombre); p.version = 1; });
+        productos.forEach(p => {
+            p.version = 1;
+            if (p.stock === undefined) p.stock = 0;
+        });
+        decants.forEach(p => {
+            p.sku = slugify(p.nombre);
+            p.version = 1;
+            if (p.stock === undefined) p.stock = 0;
+        });
 
         setStockClient(new StockClient('/api/stock'));
 
