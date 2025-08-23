@@ -95,9 +95,15 @@ function updateCart() {
 
 async function getStockLevels() {
   if (stockClient) return stockClient.getAll();
-  const res = await fetch(`/api/stock?t=${Date.now()}`, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to fetch stock');
-  return res.json();
+  try {
+    const res = await fetch(`/api/stock?t=${Date.now()}`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('API unavailable');
+    return res.json();
+  } catch (err) {
+    const res = await fetch(`/data/stock.json?t=${Date.now()}`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Failed to fetch stock');
+    return res.json();
+  }
 }
 
 async function submitOrder(order) {
