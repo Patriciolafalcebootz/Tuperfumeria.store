@@ -719,28 +719,6 @@
             }
         ];
 
-        const stockLevels = {
-            "ALH-AMB-120": 6,
-            "ARM-CDNIM-105": 10,
-            "armaf-odyssey-mandarin-sky-edp-mas-100ml": 6,
-            "lattafa-asad-bourbon-edp-100ml": 5,
-            "lattafa-asad-yara-tous-edp-mas-100ml": 5,
-            "asad-negro-edp-100ml": 7,
-            "lattafa-asad-yara-candy-edp-100ml": 7,
-            "lattafa-khamrah-edp-unisex-100ml": 7,
-            "badee-al-oud-oud-noble-blush-edp-100ml": 6,
-            "badee-al-oud-for-glory-edp-100ml": 6,
-            "badee-al-oud-amethyst-edp-100ml": 6,
-            "asad-zanzibar-edp-100ml": 6,
-            "badee-al-oud-honor-glory-edp-100ml": 5,
-            "lattafa-yara-rosa-edp-100ml": 5,
-            "durrat-al-aroos-edp-80ml": 7,
-            "lattafa-angham-edp-100ml": 7
-        };
-        productos.forEach(p => {
-            p.stock = stockLevels[p.sku] || 0;
-        });
-
         // Decants
         const decants = [
             {
@@ -748,7 +726,7 @@
                 imagenes: ["https://puntotienda.com.py/wp-content/uploads/2023/02/s-l1600.jpg"],
                 categoria: "Decant Diseñador",
                 precio: 22500,
-                stock: 1,
+                stock: true,
                 descripcion: "",
                 notas: {
                     top: [],
@@ -761,7 +739,7 @@
                 imagenes: ["https://puntotienda.com.py/wp-content/uploads/2023/02/s-l1600.jpg"],
                 categoria: "Decant Diseñador",
                 precio: 21000,
-                stock: 1,
+                stock: true,
                 descripcion: "",
                 notas: {
                     top: [],
@@ -774,7 +752,7 @@
                 imagenes: ["https://puntotienda.com.py/wp-content/uploads/2023/02/s-l1600.jpg"],
                 categoria: "Decant Diseñador",
                 precio: 21000,
-                stock: 1,
+                stock: true,
                 descripcion: "",
                 notas: {
                     top: [],
@@ -790,12 +768,12 @@
 
         productos.forEach(p => {
             p.version = 1;
-            if (p.stock === undefined) p.stock = 0;
+            p.stock = true;
         });
         decants.forEach(p => {
             p.sku = slugify(p.nombre);
             p.version = 1;
-            if (p.stock === undefined) p.stock = 0;
+            p.stock = true;
         });
 
 
@@ -830,14 +808,13 @@
             });
         }
 
-        function formatStockInfo(stock) {
-            const num = Number(stock) || 0;
+        function formatStockInfo(available) {
             return {
-                text: num > 0 ? `Stock: ${num}` : 'Sin stock',
-                textColor: num > 0 ? 'text-green-600' : 'text-red-600',
-                badgeClass: num > 0
+                text: available ? 'Disponible' : 'No disponible',
+                textColor: available ? 'text-green-600' : 'text-red-600',
+                badgeClass: available
                     ? 'flex items-center bg-green-100 text-green-800 text-xs px-2 py-1 rounded'
-                    : 'flex items-center bg-red-100 text-red-800 text-xs px-2 py-1 rounded'
+                    : 'flex items-center bg-red-100 text-red-800 text-xs px-2 py-1 rounded',
             };
         }
 
@@ -966,6 +943,8 @@
 
             const stockElement = document.getElementById('modal-stock');
             const { text, badgeClass } = formatStockInfo(prod.stock);
+            stockElement.textContent = text;
+            stockElement.className = badgeClass;
             stockElement.style.display = 'flex';
 
 
