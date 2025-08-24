@@ -381,7 +381,6 @@
         </div>
     </div>
 
-    <script src="stockClient.js"></script>
     <script src="cart.js"></script>
     <script>
         // La constante productos incluye categorías "Árabes" y "Diseñador"; las decants se definen aparte
@@ -720,6 +719,14 @@
             }
         ];
 
+        const stockLevels = {
+            "ALH-AMB-120": 1,
+            "ARM-CDNIM-105": 6
+        };
+        productos.forEach(p => {
+            p.stock = stockLevels[p.sku] || 0;
+        });
+
         // Decants
         const decants = [
             {
@@ -777,11 +784,9 @@
             if (p.stock === undefined) p.stock = 0;
         });
 
-        setStockClient(new StockClient('/api/stock'));
 
         // Carrito
         let currentProduct = null;
-        let refreshStock;
 
         // Renderizado de productos
         function renderProductos() {
@@ -1057,43 +1062,26 @@
             updateCart();
         }
 
-        async function handleAddToCart() {
+        function handleAddToCart() {
             if (!currentProduct) return;
-            try {
-                await addToCart(currentProduct);
-                updateCart();
-                closeModal();
-                showNotification(`${currentProduct.nombre} agregado al carrito`);
-                if (refreshStock) await refreshStock();
-            } catch (err) {
-                showNotification('No se pudo reservar stock');
-            }
+            addToCart(currentProduct);
+            updateCart();
+            closeModal();
+            showNotification(`${currentProduct.nombre} agregado al carrito`);
         }
 
-        async function checkout() {
+        function checkout() {
             if (cart.length === 0) return;
             const items = cart.slice();
-            try {
-                await commitCart();
-            } catch (err) {
-                showNotification('No hay stock suficiente');
-                return;
-            }
-
             const whatsappNumber = "+5491138722792";
             let message = "Hola, estoy interesado en los siguientes productos:\n\n";
-
             items.forEach(item => {
                 message += `- ${item.name} (${item.quantity} x $${item.price.toLocaleString('es-AR')})\n`;
             });
-
             message += `\nTotal: $${items.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString('es-AR')}`;
-
             window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
-
             cart.length = 0;
             updateCart();
-            if (refreshStock) await refreshStock();
         }
 
         function buyNow() {
@@ -1125,40 +1113,9 @@
         });
 
         // Inicialización
-        document.addEventListener('DOMContentLoaded', async () => {
-            const allProducts = [...productos, ...decants];
-
-            refreshStock = async function() {
-                try {
-                    const stockData = await getStockLevels();
-                    stockData.forEach(item => {
-                        const prod = allProducts.find(p => p.sku === item.sku);
-                        if (prod) {
-                            prod.stock = Number(
-                                item.available !== undefined ? item.available : item.stock
-                            ) || 0;
-                            if (item.version !== undefined) {
-                                prod.version = item.version;
-                            }
-                        }
-                    });
-                } catch (err) {
-                    console.error('Error fetching stock', err);
-                } finally {
-                    // Re-renderizamos para actualizar los niveles de stock
-                    renderProductos();
-                }
-            };
-
-            // Cargamos el stock antes de renderizar el catálogo
-            await refreshStock();
-            const originalRemoveFromCart = window.removeFromCart;
-            window.removeFromCart = async (index) => {
-                await originalRemoveFromCart(index);
-                if (refreshStock) await refreshStock();
-            };
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProductos();
             updateCompareButton();
-            setInterval(refreshStock, 60000);
 
             const orderForm = document.getElementById('order-form');
             if (orderForm) {
